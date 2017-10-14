@@ -1,9 +1,14 @@
 package com.zypus.eliza
 
+import com.zypus.eliza.dsl.Goto
+import com.zypus.eliza.dsl.Key
+import com.zypus.eliza.dsl.Reassembly
+import com.zypus.eliza.dsl.Script
+
 /**
  * The main engine of ELIZA.
  *
- * @author Fabian Fraenz <f.fraenz@t-online.de>
+ * @author Zypus
  *
  * @created 10.10.17
  */
@@ -73,7 +78,7 @@ class ELIZA(var script: Script, val memory: MutableList<String> = arrayListOf())
 
 	private fun answer(cleanInput: String) {
 		// check if the user wants to quit
-		if (cleanInput in script.quitList) {
+		if (cleanInput in script.quits) {
 			isRunning = false
 			return
 		}
@@ -82,13 +87,13 @@ class ELIZA(var script: Script, val memory: MutableList<String> = arrayListOf())
 
 		// apply pre-processing transformations
 		val preWords = words.map {
-			script.preMap.getOrDefault(it, it)
+			script.preTransformations.getOrDefault(it, it)
 		}
 
 		val preparedInput = preWords.joinToString(separator = " ")
 
 		// find keywords in the input and rank them according to their weight
-		val keyStack: MutableList<Key> = script.keyMap.entries
+		val keyStack: MutableList<Key> = script.keys.entries
 				.filter { it.key in preWords }
 				.sortedBy {
 					it.value.index
@@ -101,8 +106,8 @@ class ELIZA(var script: Script, val memory: MutableList<String> = arrayListOf())
 		if (keyStack.isEmpty() && memory.isNotEmpty()) {
 			return answer(memory.removeAt(0))
 		}
-		else if (keyStack.isEmpty() && "xnone" in script.keyMap) {
-			keyStack += script.keyMap["xnone"]!!
+		else if (keyStack.isEmpty() && "xnone" in script.keys) {
+			keyStack += script.keys["xnone"]!!
 		}
 
 		val reply = if (keyStack.isNotEmpty()) {
@@ -119,11 +124,11 @@ class ELIZA(var script: Script, val memory: MutableList<String> = arrayListOf())
 						val action = decomposition.nextAction()
 						when (action) {
 							is Goto       ->
-								script.keyMap[action.target]?.let {
+								script.keys[action.target]?.let {
 									processKey(it)
 								} ?: "<${key.name}(${decomposition.pattern}) Goto target '${action.target}' is missing>"
 							is Reassembly ->
-								action.assemble(decomposition.pattern, preparedInput, script.postMap)
+								action.assemble(decomposition.pattern, preparedInput, script.postTransformations)
 						}
 					}
 				}
@@ -147,5 +152,4 @@ fun main(args: Array<String>) {
 			process(readLine() ?: "quit")
 		}
 	}
-
 }

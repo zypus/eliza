@@ -1,9 +1,11 @@
 package com.zypus.eliza
 
+import com.zypus.eliza.dsl.script
+
 /**
- * TODO Add description
+ * Object holding all predefined scripts.
  *
- * @author Fabian Fraenz <f.fraenz@t-online.de>
+ * @author Zypus
  *
  * @created 10.10.17
  */
@@ -47,14 +49,14 @@ object Scripts {
 				"i'm" to "you are"
 		)
 
-		val belief = synon("belief", "feel", "think", "believe", "wish")
-		val family = synon("family", "mother", "mom", "father", "dad", "sister", "brother", "wife", "children", "child")
-		val desire = synon("desire", "want", "need")
-		val sad = synon("sad", "unhappy", "depressed", "sick")
-		val happy = synon("happy", "elated", "glad", "better")
-		val cannot = synon("cannot", "can't")
-		val everyone = synon("everyone", "everybody", "nobody", "none")
-		val be = synon("be", "am", "is", "are", "was")
+		val belief = synonym("belief", "feel", "think", "believe", "wish")
+		val family = synonym("family", "mother", "mom", "father", "dad", "sister", "brother", "wife", "children", "child")
+		val desire = synonym("desire", "want", "need")
+		val sad = synonym("sad", "unhappy", "depressed", "sick")
+		val happy = synonym("happy", "elated", "glad", "better")
+		val cannot = synonym("cannot", "can't")
+		val everyone = synonym("everyone", "everybody", "nobody", "none")
+		val be = synonym("be", "am", "is", "are", "was")
 
 		key("xnone") {
 			decompose("^(.*)$") {
